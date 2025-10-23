@@ -1,0 +1,14 @@
+{
+  "name": "microblog-web",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "tailwindcss -i ./src/styles.css -o ./dist/assets/styles.css --minify && node ./scripts/copy-html.js"
+  },
+  "dependencies": {
+    "tailwindcss": "3.4.13",
+    "postcss": "8.4.47",
+    "daisyui": "4.12.10",
+    "autoprefixer": "10.4.20"
+  }
+}

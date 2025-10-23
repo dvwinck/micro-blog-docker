@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  api:
+    build: ../back/.
+    image: diogowinck/microblog-api:latest
+    environment:
+      - PORT=3000
+      - DB_PATH=/data/microblog.db
+      - CORS_ORIGIN=*
+    volumes:
+      - api_database:/data
+    networks: [appnet]
+    restart: unless-stopped
+
+  web:
+    build: ../front/.
+    image: diogowinck/microblog-web:latest
+    depends_on: [api]
+    ports:
+      - "8080:80"
+    networks: [appnet]
+    restart: unless-stopped
+
+networks:
+  appnet: {}
+
+volumes:
+  api_database: {}

@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="cupcake">
+<head>
+  <meta charset="utf-8">
+  <title>Microblog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="/assets/styles.css" rel="stylesheet">
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <meta name="api-base" content="/api">
+</head>
+<body class="bg-base-200 min-h-screen" x-data="microblog()">
+  <div class="max-w-2xl mx-auto p-4">
+    <h1 class="text-3xl font-bold mb-4 text-center">Microblog</h1>
+
+    <!-- Formulário -->
+    <form @submit.prevent="submit" class="card bg-base-100 p-4 shadow mb-6">
+      <input class="input input-bordered w-full mb-2" placeholder="Seu nome" x-model="form.name" maxlength="80" required>
+      <textarea class="textarea textarea-bordered w-full mb-2" placeholder="Mensagem" x-model="form.message" rows="3" maxlength="500" required></textarea>
+      <input type="text" x-model="form.website" style="display:none">
+      <button class="btn btn-primary w-full" :disabled="loading">
+        <span x-show="!loading">Publicar</span>
+        <span x-show="loading" class="loading loading-spinner"></span>
+      </button>
+    </form>
+
+    <!-- Mensagem de erro -->
+    <template x-if="error">
+      <div class="alert alert-error mb-4">
+        <span x-text="error"></span>
+      </div>
+    </template>
+
+    <!-- Lista de posts -->
+    <div>
+      <template x-for="p in posts" :key="p.id">
+        <div class="card bg-base-100 p-3 shadow mb-3">
+          <div class="text-sm text-gray-500 mb-1">
+            <strong x-text="p.name"></strong> — IP: <span x-text="p.ip"></span> — <span x-text="formatDate(p.created_at)"></span>
+          </div>
+          <div x-text="p.message" class="whitespace-pre-wrap"></div>
+        </div>
+      </template>
+      <template x-if="!posts.length">
+        <p class="text-center text-gray-500">Nenhuma mensagem ainda.</p>
+      </template>
+    </div>
+  </div>
+
+  <script>
+    function microblog() {
+      const api = axios.create({ baseURL: document.querySelector('meta[name="api-base"]').content });
+      return {
+        posts: [],
+        form: { name: "", message: "", website: "" },
+        loading: false,
+        error: "",
+        async load() {
+          try {
+            const { data } = await api.get("/posts");
+            this.posts = data;
+          } catch {
+            this.error = "Falha ao carregar posts.";
+          }
+        },
+        async submit() {
+          this.loading = true; this.error = "";
+          try {
+            await api.post("/posts", this.form);
+            this.form = { name: "", message: "", website: "" };
+            await this.load();
+          } catch (e) {
+            this.error = e.response?.data || "Erro ao publicar.";
+          } finally {
+            this.loading = false;
+          }
+        },
+        formatDate(s) { return new Date(s).toLocaleString(); },
+        init() { this.load(); }
+      }
+    }
+  </script>
+</body>
+</html>
