@@ -7,12 +7,22 @@ on:
     branches: [ "main" ]
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+      - uses: actions/checkout@v4
+
+      # Build the FRONT image
+      - name: Build Frontend image
+        run: |
+          docker build ./front \
+            --file ./front/Dockerfile \
+            --tag diogowinck/microblog-front:$(date +%s)
+
+      # Build the BACK image
+      - name: Build Backend image
+        run: |
+          docker build ./back \
+            --file ./back/Dockerfile \
+            --tag diogowinck/microblog-back:$(date +%s)
