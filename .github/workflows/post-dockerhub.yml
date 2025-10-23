@@ -31,7 +31,7 @@ jobs:
 
       # Push images only when it's a push (not a PR)
       - name: Push Front image
-        run: docker push ${DOCKERHUB_USER}/microblog-front:latest
+        run: docker push ${DOCKERHUB_USERNAME}/microblog-front:latest
 
 
       # Build the BACK image
@@ -42,4 +42,4 @@ jobs:
             --tag diogowinck/microblog-back:$(date +%s)
 
       - name: Push Back image
-        run: docker push ${DOCKERHUB_USER}/microblog-back:latest
+        run: docker push ${DOCKERHUB_USERNAME}/microblog-back:latest
